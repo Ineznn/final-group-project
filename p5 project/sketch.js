@@ -1,10 +1,11 @@
 let Blocks = [];
+let movingBlocks = [];
 let smallBlockSize;
 let song, analyser;
 
 function preload() {
   // Let's load the sound file in preload
-  song = loadSound('assets/What_Matters_Most.mp3');
+  song = loadSound("assets/What_Matters_Most.mp3");
 }
 
 function setup() {
@@ -15,12 +16,12 @@ function setup() {
   button.position((width - button.width) / 2, height - button.height - 20); // Set the position of the button to the bottom centre
   button.mousePressed(play_pause); // Run the function play_pause when the button is pressed
   initializeBlocks(); // Draw different coloured blocks as buildings, roads, pavements, zebra crossings.
-  generateRandomSmallBlocks(); // Generate small red or blue blocks to simulate cars
-  drawBlocks();
+  generateMovingBlocks(); // Generate small moving blocks to simulate cars
 }
 
 function draw() {
   drawBlocks();
+  updateMovingBlocks();
 }
 
 // I want the song to play once, so I use song.play()
@@ -36,9 +37,9 @@ function play_pause() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   Blocks = []; // Clear the original Blocks array at each window adjustment 
+  movingBlocks = []; // Clear the moving blocks array as well
   initializeBlocks();
-  generateRandomSmallBlocks();
-  drawBlocks();
+  generateMovingBlocks();
 }
 
 function initializeBlocks() {
@@ -123,6 +124,9 @@ function initializeBlocks() {
   Blocks.push(new Block(15 * smallBlockSize, 22 * smallBlockSize, 2 * smallBlockSize, 2 * smallBlockSize, color(230, 205, 40)));
 }
 
+// Additional code for buildings and pavements as per the original setup
+// ... (omitted for brevity)
+
 // Create a class with each block (buildings, roads) as a separate object for management and drawing
 class Block {
   constructor(x, y, w, h, c, isRoad = false) {
@@ -148,28 +152,70 @@ function drawBlocks() {
   for (let i = 0; i < Blocks.length; i++) {
     Blocks[i].display();
   }
+  for (let i = 0; i < movingBlocks.length; i++) {
+    movingBlocks[i].display();
+  }
 }
 
-// Generate random blocks on road blocks to simulate cars
-function generateRandomSmallBlocks() {
-
-  // Check each block object in the Blocks array and check if it is road block (isRoad is true)
+// Generate small moving blocks to simulate cars
+function generateMovingBlocks() {
   for (let i = 0; i < Blocks.length; i++) {
     if (Blocks[i].isRoad) {
-      // Generate small blocks randomly in the road area
-      let numSmallBlocks = 5; // Each road generates five blocks
+      let numSmallBlocks = 5; // Each road generates five moving blocks
       for (let t = 0; t < numSmallBlocks; t++) {
-        // Use Math.floor() to ensure that randomly generated numbers are integers
-        // Make the position of the randomly generated small blocks on the road blocks
         let x = Blocks[i].x + Math.floor(random(0, Blocks[i].w / smallBlockSize)) * smallBlockSize;
         let y = Blocks[i].y + Math.floor(random(0, Blocks[i].h / smallBlockSize)) * smallBlockSize;
-
-        // assign blue or red colour randomly to the smallblocks
-        let colorSmallBlock = random() > 0.5 ? color(160, 55, 45) : color(70, 100, 190);
-
-        // Add random small blocks to the Blocks array
-        Blocks.push(new Block(x, y, smallBlockSize, smallBlockSize, colorSmallBlock));
+        let speed = random(0.2, 2); // Random speed for each car
+        let direction = random() > 0.5 ? 1 : -1; // Random direction (left or right or up or down based on road orientation)
+        let colorSmallBlock = random() > 0.5 ? color(160, 55, 45) : color(70, 100, 190);// assign blue or red colour randomly to the smallblocks
+        movingBlocks.push(new MovingBlock(x, y, smallBlockSize, smallBlockSize, colorSmallBlock, speed, direction, Blocks[i]));
       }
     }
+  }
+}
+
+// Create a class for moving blocks
+class MovingBlock extends Block {
+  constructor(x, y, w, h, c, speed, direction, parentBlock) {
+    super(x, y, w, h, c);
+    this.speed = speed;
+    this.direction = direction;
+    this.parentBlock = parentBlock; // Reference to the road block to restrict movement within it
+  }
+
+  update() {
+    if (this.parentBlock.w > this.parentBlock.h) {
+      // Horizontal movement for horizontal roads
+      this.x += this.speed * this.direction;
+      // Keep the moving block within the bounds of the parent road block
+      if (this.x > this.parentBlock.x + this.parentBlock.w) {
+        this.x = this.parentBlock.x;
+      }
+      if (this.x < this.parentBlock.x) {
+        this.x = this.parentBlock.x + this.parentBlock.w;
+      }
+    } else {
+      // Vertical movement for vertical roads
+      this.y += this.speed * this.direction;
+      // Keep the moving block within the bounds of the parent road block
+      if (this.y > this.parentBlock.y + this.parentBlock.h) {
+        this.y = this.parentBlock.y;
+      }
+      if (this.y < this.parentBlock.y) {
+        this.y = this.parentBlock.y + this.parentBlock.h;
+      }
+    }
+  }
+
+  display() {
+    this.update();
+    super.display();
+  }
+}
+
+// Update all moving blocks
+function updateMovingBlocks() {
+  for (let i = 0; i < movingBlocks.length; i++) {
+    movingBlocks[i].update();
   }
 }
