@@ -1,5 +1,11 @@
 let Blocks = [];
 let smallBlockSize;
+let song, analyser;
+
+function preload() {
+  song = loadSound('assets/Dont_Look_Back.wav');
+}
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // Drawing canvas as window size
