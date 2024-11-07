@@ -91,8 +91,6 @@ function initializeBlocks() {
   Blocks.push(new Block(31 * smallBlockSize, 31 * smallBlockSize, 5 * smallBlockSize, 8 * smallBlockSize, color(70, 100, 190)));
   Blocks.push(new Block(41 * smallBlockSize, 13 * smallBlockSize, 3 * smallBlockSize, 2.5 * smallBlockSize, color(70, 100, 190)));
   Blocks.push(new Block(43 * smallBlockSize, 42 * smallBlockSize, 3 * smallBlockSize, 2 * smallBlockSize, color(70, 100, 190)));
-  Blocks.push(new Block(10 * smallBlockSize, 12 * smallBlockSize, smallBlockSize, smallBlockSize, color(70, 100, 190)));
-  Blocks.push(new Block(18 * smallBlockSize, 12 * smallBlockSize, smallBlockSize, smallBlockSize, color(70, 100, 190)));
 
   // red blocks simulate buildings
   Blocks.push(new Block(7 * smallBlockSize, 21 * smallBlockSize, 4 * smallBlockSize, 3 * smallBlockSize, color(160, 55, 45)));
@@ -224,12 +222,12 @@ class MovingBlock extends Block {
 
   display() {
     push();
-    translate(this.x + this.w / 2, this.y + this.h / 2); //// Move to the center of the current block
+    translate(this.x + this.w / 2, this.y + this.h / 2);// Move to the center of the current block
     scale(this.scale); // Scale the block
     noStroke();
     fill(this.c);
     rectMode(CENTER); // Draw from the center of the block
-    rect(0, 0, this.w, this.h); // Draw the block, using (0, 0) as the center.
+    rect(0, 0, this.w, this.h); // Draw the square, using (0, 0) as the center.
     pop();
   }
 }
