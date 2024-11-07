@@ -5,7 +5,7 @@ let song, analyser;
 
 function preload() {
   // Let's load the sound file in preload
-  song = loadSound("assets/What_Matters_Most.mp3");
+  song = loadSound("assets/Two_Cigarettes_Please.mp3");
 }
 
 function setup() {
