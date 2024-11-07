@@ -28,7 +28,7 @@ function setup() {
 function draw() {
   drawBlocks();// Drawing static buildings and roads
   let spectrum = fft.analyze();// The analyze() method returns an array of amplitude values across the frequency spectrum
-  //Update the scaling of all moving squares according to the spectrum
+  //Update the scaling of all moving blocks according to the spectrum
   for (let i = 0; i < movingBlocks.length; i++) {
     let scale = 1 + spectrum[i % numBins] / 255; // Scale spectrum values to 1 to 2 range
     movingBlocks[i].setScale(scale); // Update the size of the moving cube using the scaling factor
@@ -136,9 +136,6 @@ function initializeBlocks() {
   Blocks.push(new Block(15 * smallBlockSize, 22 * smallBlockSize, 2 * smallBlockSize, 2 * smallBlockSize, color(230, 205, 40)));
 }
 
-// Additional code for buildings and pavements as per the original setup
-// ... (omitted for brevity)
-
 // Create a class with each block (buildings, roads) as a separate object for management and drawing
 class Block {
   constructor(x, y, w, h, c, isRoad = false) {
@@ -227,11 +224,12 @@ class MovingBlock extends Block {
 
   display() {
     push();
-    translate(this.x, this.y); // Move to the current square position
+    translate(this.x + this.w / 2, this.y + this.h / 2); //// Move to the center of the current block
     scale(this.scale); // Scale the block
     noStroke();
     fill(this.c);
-    rect(0, 0, this.w, this.h); // Draw the square, using (0, 0) as the center.
+    rectMode(CENTER); // Draw from the center of the block
+    rect(0, 0, this.w, this.h); // Draw the block, using (0, 0) as the center.
     pop();
   }
 }
