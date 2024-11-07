@@ -3,12 +3,17 @@ let smallBlockSize;
 let song, analyser;
 
 function preload() {
-  song = loadSound('assets/Dont_Look_Back.wav');
+  // Let's load the sound file in preload
+  song = loadSound('assets/What_Matters_Most.mp3');
 }
-
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // Drawing canvas as window size
+  analyser = new p5.Amplitude(); // Create a new Amplitude analyser, this will analyse the volume of the song
+  analyser.setInput(song); // Connect the input of the analyser to the song
+  let button = createButton('Play/Pause'); // Add a button for play/pause
+  button.position((width - button.width) / 2, height - button.height - 20); // Set the position of the button to the bottom centre
+  button.mousePressed(play_pause); // Run the function play_pause when the button is pressed
   initializeBlocks(); // Draw different coloured blocks as buildings, roads, pavements, zebra crossings.
   generateRandomSmallBlocks(); // Generate small red or blue blocks to simulate cars
   drawBlocks();
@@ -16,6 +21,15 @@ function setup() {
 
 function draw() {
   drawBlocks();
+}
+
+// I want the song to play once, so I use song.play()
+function play_pause() {
+  if (song.isPlaying()) {
+    song.pause(); // Pause the music
+  } else {
+    song.loop(); // Loop the music
+  }
 }
 
 // Allow output images to automatically adjust to changes in window size
