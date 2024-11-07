@@ -165,7 +165,7 @@ function generateMovingBlocks() {
       for (let t = 0; t < numSmallBlocks; t++) {
         let x = Blocks[i].x + Math.floor(random(0, Blocks[i].w / smallBlockSize)) * smallBlockSize;
         let y = Blocks[i].y + Math.floor(random(0, Blocks[i].h / smallBlockSize)) * smallBlockSize;
-        let speed = random(0.2, 2); // Random speed for each car
+        let speed = random(0.1, 0.9); // Random speed for each car
         let direction = random() > 0.5 ? 1 : -1; // Random direction (left or right or up or down based on road orientation)
         let colorSmallBlock = random() > 0.5 ? color(160, 55, 45) : color(70, 100, 190);// assign blue or red colour randomly to the smallblocks
         movingBlocks.push(new MovingBlock(x, y, smallBlockSize, smallBlockSize, colorSmallBlock, speed, direction, Blocks[i]));
