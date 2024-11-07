@@ -2,17 +2,23 @@ let Blocks = [];
 let movingBlocks = [];
 let smallBlockSize;
 let song, analyser;
+let fft;// Let's make a variable to hold the FFT object
+let numBins = 128;// This is how many frequency bands we will have
+let smoothing = 0.8;// This averages the values of the frequency bands over time so it doesn't jump around too much
+let button;
 
+// Load sound file before setup() function runs
 function preload() {
-  // Let's load the sound file in preload
-  song = loadSound("assets/Two_Cigarettes_Please.mp3");
+  song = loadSound("assets/Two_Cigarettes_Please.mp3");// Audio file from freesound https://www.fiftysounds.com
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // Drawing canvas as window size
   analyser = new p5.Amplitude(); // Create a new Amplitude analyser, this will analyse the volume of the song
   analyser.setInput(song); // Connect the input of the analyser to the song
-  let button = createButton('Play/Pause'); // Add a button for play/pause
+  fft = new p5.FFT(smoothing, numBins); // Create a new instance of p5.FFT() object
+  song.connect(fft);
+  button = createButton('Play/Pause'); // Add a button for play/pause
   button.position((width - button.width) / 2, height - button.height - 20); // Set the position of the button to the bottom centre
   button.mousePressed(play_pause); // Run the function play_pause when the button is pressed
   initializeBlocks(); // Draw different coloured blocks as buildings, roads, pavements, zebra crossings.
@@ -20,8 +26,14 @@ function setup() {
 }
 
 function draw() {
-  drawBlocks();
-  updateMovingBlocks();
+  drawBlocks();// Drawing static buildings and roads
+  let spectrum = fft.analyze();// The analyze() method returns an array of amplitude values across the frequency spectrum
+  //Update the scaling of all moving squares according to the spectrum
+  for (let i = 0; i < movingBlocks.length; i++) {
+    let scale = 1 + spectrum[i % numBins] / 255; // Scale spectrum values to 1 to 2 range
+    movingBlocks[i].setScale(scale); // Update the size of the moving cube using the scaling factor
+  }
+  updateMovingBlocks();// Update and draw moving cubes
 }
 
 // I want the song to play once, so I use song.play()
@@ -180,13 +192,19 @@ class MovingBlock extends Block {
     super(x, y, w, h, c);
     this.speed = speed;
     this.direction = direction;
-    this.parentBlock = parentBlock; // Reference to the road block to restrict movement within it
+    this.parentBlock = parentBlock; // Reference the parent block to limit the movement range of the moving block
+    this.scale = 1; // Initial scaling is 1
   }
 
-  update() {
+  setScale(scale) {
+    this.scale = scale; // Setting the scaling
+  }
+
+  update(scale = 1) {
+    let adjustedSpeed = this.speed * scale; // Adjust the speed according to the scaling factor of the audio spectrum
     if (this.parentBlock.w > this.parentBlock.h) {
       // Horizontal movement for horizontal roads
-      this.x += this.speed * this.direction;
+      this.x += adjustedSpeed * this.direction;
       // Keep the moving block within the bounds of the parent road block
       if (this.x > this.parentBlock.x + this.parentBlock.w) {
         this.x = this.parentBlock.x;
@@ -196,7 +214,7 @@ class MovingBlock extends Block {
       }
     } else {
       // Vertical movement for vertical roads
-      this.y += this.speed * this.direction;
+      this.y += adjustedSpeed * this.direction;
       // Keep the moving block within the bounds of the parent road block
       if (this.y > this.parentBlock.y + this.parentBlock.h) {
         this.y = this.parentBlock.y;
@@ -208,8 +226,13 @@ class MovingBlock extends Block {
   }
 
   display() {
-    this.update();
-    super.display();
+    push();
+    translate(this.x, this.y); // Move to the current square position
+    scale(this.scale); // Scale the block
+    noStroke();
+    fill(this.c);
+    rect(0, 0, this.w, this.h); // Draw the square, using (0, 0) as the center.
+    pop();
   }
 }
 
