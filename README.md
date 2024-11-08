@@ -18,9 +18,9 @@ I chose to use audio input to drive the animation. The animation responds to dif
 ## Unique Properties of the Animated Elements
 
 - Item 4
-- Subitem 4.1
+- 4.1
 Scaling effect: The size of the visual elements scales according to the audio amplitude. This allows the animation effect to “breathe” along with the music.
-- Subitem 4.2
+- 4.2
 Motion Paths: I used Perlin noise to create a natural and unpredictable motion pattern for certain elements, adding a unique dynamic effect that made it very different from the panelists' animations.
 
 ## References and Inspiration
@@ -32,18 +32,18 @@ My inspiration came from my knowledge of Mondrian's paintings and from teaching 
 ## Technical Explanation of the Code
 
 - Item 6
-- Subitem 6.1
+- 6.1
 Audio Analysis: The p5.FFT() library is used to perform frequency analysis on the music. The analysis generates an array of values that represent different frequencies in the audio signal.
-- Subitem 6.2
+- 6.2
 Dynamic Scaling and Coloring: The values from the fft.analyze() function are used to adjust the scaling (scale()) and color properties (fill()) of different visual components. For instance, lower frequencies impact the size of certain elements, while higher frequencies control color changes.
-- Subitem 6.3
+- 6.3
 Perlin Noise for Movement: I used noise() from the p5.js library to create smooth, flowing movement paths for some components. The Perlin noise ensures that the elements move in a natural, unpredictable manner, enhancing the organic feel of the animation.
 
 ## Changes to Group Code
 I made several changes to enhance the group code:
-- Subitem 5.1
+- 5.1
 Integrated the p5.FFT() function to make the animation driven by audio.
-- Subitem 5.2
+- 5.2
 Added Perlin noise to control the movement of specific visual elements, which was not originally part of the group concept.
 
 ## External Tools and Techniques
